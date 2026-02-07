@@ -4,49 +4,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
-    body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-    .haber-kart { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; border-left: 5px solid #007bff; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-    .modal-icerik { background: #fff; margin: 20% auto; padding: 20px; width: 80%; border-radius: 15px; }
-    #kapat-btn { background: #007bff; color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+    body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+    .haber-kart { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer; border-left: 6px solid #007bff; }
+    .haber-kart h3 { margin: 0; font-size: 15px; color: #222; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 1000; }
+    .modal-icerik { background: #fff; margin: 10% auto; padding: 20px; width: 85%; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
+    .detay-link { display: block; background: #28a745; color: #fff; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; font-size: 16px; }
+    #kapat-btn { background: #dc3545; color: #fff; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 10px; font-size: 16px; cursor: pointer; }
+    h2 { font-size: 18px; color: #007bff; }
   </style>
 </head>
 <body>
-  <div id="haber-listesi">Haberler yükleniyor... 🔄</div>
+
+  <div id="haber-listesi">Yükleniyor... 🔄</div>
+
   <div id="modal" class="modal">
     <div class="modal-icerik">
       <h2 id="modal-baslik"></h2>
       <p id="modal-ozet"></p>
-      <button id="kapat-btn">TAMAM</button>
+      <div id="modal-butonlar"></div>
+      <button id="kapat-btn">KAPAT</button>
     </div>
   </div>
+
   <script>
     const apiKey = 'c51c358f11acc86219d65eb567e22776';
-    const apiUrl = `https://corsproxy.io/?https://gnews.io/api/v4/top-headlines?lang=tr&max=5&apikey=${apiKey}`;
+    const rawUrl = `https://gnews.io/api/v4/top-headlines?lang=tr&max=5&apikey=${apiKey}`;
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+
     async function haberleriYukle() {
       try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('API Hatası: ' + response.status);
+        const response = await fetch(proxyUrl);
         const data = await response.json();
         const liste = document.getElementById('haber-listesi');
         liste.innerHTML = '';
-        if (data.articles.length === 0) { liste.innerHTML = 'Haber bulunamadı. ❌'; return; }
+
         data.articles.forEach(haber => {
           const kart = document.createElement('div');
           kart.className = 'haber-kart';
           kart.innerHTML = `<h3>${haber.title}</h3>`;
           kart.onclick = () => {
             document.getElementById('modal-baslik').innerText = haber.title;
-            document.getElementById('modal-ozet').innerText = haber.description || 'Özet bulunamadı.';
+            document.getElementById('modal-ozet').innerText = haber.description || 'İçerik mevcut değil.';
+            document.getElementById('modal-butonlar').innerHTML = `
+              <a href="${haber.url}" target="_blank" class="detay-link">KAYNAĞA GİT / OKU</a>
+            `;
             document.getElementById('modal').style.display = 'block';
           };
           liste.appendChild(kart);
         });
       } catch (hata) {
-        document.getElementById('haber-listesi').innerText = 'Hata: ' + hata.message;
+        document.getElementById('haber-listesi').innerText = 'Hata oluştu! ❌';
       }
     }
-    document.getElementById('kapat-btn').onclick = () => document.getElementById('modal').style.display = 'none';
+
+    document.getElementById('kapat-btn').onclick = () => {
+      document.getElementById('modal').style.display = 'none';
+    };
+
+    window.onclick = (e) => {
+      if (e.target.className === 'modal') document.getElementById('modal').style.display = 'none';
+    };
+
     haberleriYukle();
   </script>
 </body>
