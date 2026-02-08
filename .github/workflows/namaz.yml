@@ -1,3 +1,14 @@
+name: Veri Guncelleme
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tum Verileri Cek ve Firebase e Gonder
         run: |
           # Hava ve Namaz
           curl -s "https://wttr.in/Ankara?format=j1" > hava.json
@@ -9,7 +20,7 @@
           curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.ntv.com.tr/gundem.rss" > haber_ntv.json
           curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.cnnturk.com/feed/rss/all/news" > haber_cnn.json
           
-          # Firebase'e Gönder
+          # Firebase'e Gönder (PUT metodu ile tertemiz yazar)
           curl -X PUT -d @hava.json "https://piyasa-9049c-default-rtdb.firebaseio.com/hava.json"
           curl -X PUT -d @namaz.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
           curl -X PUT -d @haber_trt.json "https://piyasa-9049c-default-rtdb.firebaseio.com/haber_trt.json"
