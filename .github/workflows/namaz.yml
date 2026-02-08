@@ -1,17 +1,21 @@
-name: Namaz Vakitleri Guncelle
+name: Veri Guncelleme
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 * * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Veri Cek ve Firebase Bas
+      - name: Hava ve Namaz Verilerini Cek
         run: |
-          # MuslimSalat API üzerinden Ankara verisini çekiyoruz
+          # Ankara Hava Durumu (JSON formatında)
+          curl -s "https://wttr.in/Ankara?format=j1" > hava.json
+          
+          # Namaz Vakitleri
           curl -s "https://muslimsalat.com/ankara/daily.json" > namaz.json
           
-          # Firebase'e gönderiyoruz
+          # Firebase'e Bas
+          curl -X PUT -d @hava.json "https://piyasa-9049c-default-rtdb.firebaseio.com/hava.json"
           curl -X PUT -d @namaz.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
