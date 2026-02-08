@@ -5,76 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>PWA FINANS</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
-        .container { display: flex; flex-direction: column; gap: 10px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 15px; }
+        .header { text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 20px; color: #2c3e50; }
+        .container { display: flex; flex-direction: column; gap: 12px; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #f1c40f; }
         .info { display: flex; flex-direction: column; }
         .title { font-weight: bold; font-size: 1.1rem; color: #333; }
-        .time { font-size: 0.7rem; color: #888; }
+        .time { font-size: 0.75rem; color: #999; margin-top: 4px; }
         .prices { text-align: right; }
-        .buy { color: green; font-weight: bold; display: block; }
-        .sell { color: red; font-weight: bold; display: block; }
-        .header { text-align: center; font-weight: bold; padding: 10px; color: #2c3e50; }
+        .buy { color: #27ae60; font-weight: bold; font-size: 1.1rem; display: block; }
+        .sell { color: #e74c3c; font-weight: bold; font-size: 1.1rem; display: block; }
     </style>
 </head>
 <body>
 
-    <div class="header">GÜNCEL PİYASA VERİLERİ</div>
-    
+    <div class="header">GÜNCEL FİYATLAR</div>
     <div class="container" id="data-container">
-        <div class="card"><span>Yükleniyor...</span></div>
+        <div class="card"><span>Veriler yükleniyor...</span></div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
-        const GOLD_URL = 'https://static.altinkaynak.com/public/Gold';
-        const CURR_URL = 'https://static.altinkaynak.com/public/Currency';
+        // Senin paylaştığın bilgilerle yapılandırdım
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwQfifK4eaSrSjKpA776hD0RAlx_6a2_w",
+            authDomain: "piyasa-9049c.firebaseapp.com",
+            databaseURL: "https://piyasa-9049c-default-rtdb.firebaseio.com",
+            projectId: "piyasa-9049c",
+            storageBucket: "piyasa-9049c.firebasestorage.app",
+            messagingSenderId: "1093294750752",
+            appId: "1:1093294750752:web:55a68803bae9e61da1d045"
+        };
 
-        async function fetchData() {
-            try {
-                // Not: Gerçek uygulamada burayı Firebase üzerinden dolandıracağız
-                const [goldRes, currRes] = await Promise.all([
-                    fetch(GOLD_URL).then(r => r.json()),
-                    fetch(CURR_URL).then(r => r.json())
-                ]);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-                const gram = goldRes.find(item => item.Kod === "GA");
-                const usd = currRes.find(item => item.Kod === "USD");
-                const eur = currRes.find(item => item.Kod === "EUR");
-
-                const items = [
-                    { ad: "GRAM ALTIN", veri: gram },
-                    { ad: "DOLAR", veri: usd },
-                    { ad: "EURO", veri: eur }
-                ];
-
-                render(items);
-            } catch (err) {
-                console.error("Hata:", err);
-            }
-        }
-
-        function render(items) {
+        // Veritabanından veriyi anlık çekiyoruz
+        db.ref("piyasa").on("value", (snapshot) => {
             const container = document.getElementById('data-container');
-            container.innerHTML = '';
-            
-            items.forEach(item => {
-                const html = `
-                    <div class="card">
-                        <div class="info">
-                            <span class="title">${item.ad}</span>
-                            <span class="time">${item.veri.GuncellenmeZamani}</span>
-                        </div>
-                        <div class="prices">
-                            <span class="buy">ALIŞ: ${item.veri.Alis}</span>
-                            <span class="sell">SATIŞ: ${item.veri.Satis}</span>
-                        </div>
-                    </div>`;
-                container.innerHTML += html;
-            });
-        }
+            const data = snapshot.val();
 
-        fetchData();
-        setInterval(fetchData, 60000); // 1 dakikada bir güncelle
+            if (data) {
+                container.innerHTML = '';
+                // Veritabanındaki her bir dövizi ekrana basar
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    container.innerHTML += `
+                        <div class="card">
+                            <div class="info">
+                                <span class="title">${item.Aciklama || key}</span>
+                                <span class="time">${item.GuncellenmeZamani || ''}</span>
+                            </div>
+                            <div class="prices">
+                                <span class="buy">AL: ${item.Alis}</span>
+                                <span class="sell">SAT: ${item.Satis}</span>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                container.innerHTML = '<div class="card"><span>Veritabanı şu an boş!</span></div>';
+            }
+        });
     </script>
 </body>
 </html>
