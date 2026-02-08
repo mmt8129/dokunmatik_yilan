@@ -8,14 +8,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Hava ve Namaz Verilerini Cek
+      - name: Tum Verileri Cek
         run: |
-          # Ankara Hava Durumu (JSON formatında)
+          # Hava Durumu
           curl -s "https://wttr.in/Ankara?format=j1" > hava.json
-          
           # Namaz Vakitleri
           curl -s "https://muslimsalat.com/ankara/daily.json" > namaz.json
+          # Haberler (RSS to JSON servisi ile son dakika haberleri)
+          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.trthaber.com/manset_articles.rss" > haber.json
           
-          # Firebase'e Bas
+          # Firebase'e Gönder
           curl -X PUT -d @hava.json "https://piyasa-9049c-default-rtdb.firebaseio.com/hava.json"
           curl -X PUT -d @namaz.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
+          curl -X PUT -d @haber.json "https://piyasa-9049c-default-rtdb.firebaseio.com/haber.json"
