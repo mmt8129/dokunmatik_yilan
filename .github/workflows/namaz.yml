@@ -8,11 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Saatleri Ayıkla ve Gonder
+      - name: Veri Cek ve Firebase Bas
         run: |
-          # Ankara verisini çek ve sadece saatlerin olduğu 'timings' kısmını al
-          DATA=$(curl -s "https://api.aladhan.com/v1/timingsByCity?city=Ankara&country=Turkey&method=13")
-          echo $DATA | jq '.data.timings' > vakitler.json
+          # MuslimSalat API üzerinden Ankara verisini çekiyoruz
+          curl -s "https://muslimsalat.com/ankara/daily.json" > namaz.json
           
-          # Firebase'e sadece bu küçük saat listesini gönder
-          curl -X PUT -d @vakitler.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
+          # Firebase'e gönderiyoruz
+          curl -X PUT -d @namaz.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
