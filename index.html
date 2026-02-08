@@ -16,14 +16,24 @@
         .buy { color: #2ecc71; font-weight: bold; font-size: 1.1rem; display: block; }
         .sell { color: #e74c3c; font-weight: bold; font-size: 1.1rem; display: block; }
         .group-title { font-size: 0.9rem; color: #7f8c8d; margin-top: 10px; padding-left: 5px; font-weight: bold; }
+        
+        /* Namaz Kartı Tasarımı */
+        .namaz-container { background: #1a2a6c; color: white; padding: 15px; border-radius: 12px; margin-top: 20px; }
+        .namaz-grid { display: flex; justify-content: space-between; text-align: center; margin-top: 10px; }
+        .namaz-item { display: flex; flex-direction: column; gap: 5px; }
+        .namaz-label { font-size: 0.7rem; color: #bdc3c7; }
+        .namaz-vakit { font-weight: bold; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="header">CANLI PİYASA VERİLERİ</div>
+    
     <div class="container" id="data-container">
         <div class="card"><span>Veriler Firebase'den çekiliyor...</span></div>
     </div>
+
+    <div id="namaz-alani"></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -42,32 +52,44 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // PİYASA VERİLERİNİ ÇEK
         db.ref("piyasa").on("value", (snapshot) => {
             const container = document.getElementById('data-container');
             const data = snapshot.val();
-
             if (data) {
                 container.innerHTML = '';
-                
-                // ALTIN VERİLERİ
                 if(data.gold) {
                     container.innerHTML += '<div class="group-title">ALTIN FİYATLARI</div>';
                     data.gold.forEach(item => {
-                        if(["GA", "22", "18", "14"].includes(item.Kod)) { // Önemli olanları listele
-                            renderCard(container, item);
-                        }
+                        if(["GA", "22", "18", "14"].includes(item.Kod)) renderCard(container, item);
                     });
                 }
-
-                // DÖVİZ VERİLERİ
                 if(data.currency) {
                     container.innerHTML += '<div class="group-title">DÖVİZ KURLARI</div>';
                     data.currency.forEach(item => {
-                        if(["USD", "EUR", "GBP"].includes(item.Kod)) {
-                            renderCard(container, item);
-                        }
+                        if(["USD", "EUR", "GBP"].includes(item.Kod)) renderCard(container, item);
                     });
                 }
+            }
+        });
+
+        // NAMAZ VAKİTLERİNİ ÇEK
+        db.ref("namaz/items/0").on("value", (snapshot) => {
+            const nData = snapshot.val();
+            const namazDiv = document.getElementById('namaz-alani');
+            if (nData) {
+                namazDiv.innerHTML = `
+                    <div class="namaz-container">
+                        <div style="text-align:center; font-weight:bold; font-size:0.9rem; border-bottom:1px solid #34495e; padding-bottom:8px;">ANKARA NAMAZ VAKİTLERİ</div>
+                        <div class="namaz-grid">
+                            <div class="namaz-item"><span class="namaz-label">İmsak</span><span class="namaz-vakit">${nData.fajr}</span></div>
+                            <div class="namaz-item"><span class="namaz-label">Güneş</span><span class="namaz-vakit">${nData.shurooq}</span></div>
+                            <div class="namaz-item"><span class="namaz-label">Öğle</span><span class="namaz-vakit">${nData.dhuhr}</span></div>
+                            <div class="namaz-item"><span class="namaz-label">İkindi</span><span class="namaz-vakit">${nData.asr}</span></div>
+                            <div class="namaz-item"><span class="namaz-label">Akşam</span><span class="namaz-vakit">${nData.maghrib}</span></div>
+                            <div class="namaz-item"><span class="namaz-label">Yatsı</span><span class="namaz-vakit">${nData.isha}</span></div>
+                        </div>
+                    </div>`;
             }
         });
 
