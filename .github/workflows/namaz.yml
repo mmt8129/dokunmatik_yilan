@@ -8,10 +8,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Namaz Vakitlerini Cek
+      - name: Veri Cek ve Gonder
         run: |
-          # Ankara/Sincan için vakitleri çek (Vakit.me API)
-          curl -s "https://vakit.me/api/v1/vakityer?yer=13009" > namaz_data.json
-          
-          # Firebase'e gönder
-          curl -X PUT -d @namaz_data.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
+          # Vakit verisini al ve Firebase'e bas
+          curl -s "https://vakit.me/api/v1/vakityer?yer=13009" > data.json
+          curl -X PUT -d @data.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
