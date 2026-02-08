@@ -3,15 +3,17 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Veri Cek
+      - name: Veri Cek ve Gonder
         run: |
-          # Ankara Sincan (İlçe ID: 9214) verisini çekiyoruz
-          curl -L "https://ezanvakti.herokuapp.com/vakitler/9214" -o namaz.json      
-      - name: Firebase Gonder
-        run: |
-          # Veriyi Firebase'e basıyoruz
+          # Ankara Sincan vakitlerini çek ve kontrol et
+          curl -s "https://api.collectapi.com/pray/all?data.city=ankara" \
+          -H "content-type: application/json" \
+          -H "authorization: apikey 2O7F282m6mOnXo3B8f967T:2O9xU9Fq2pUvG7O5K8A4vX" > namaz.json
+          
+          # Firebase'e gönder
           curl -X PUT -d @namaz.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
