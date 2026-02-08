@@ -10,9 +10,9 @@
         .container { display: flex; flex-direction: column; gap: 8px; }
         
         /* Hava Durumu Kartı */
-        .weather-card { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .weather-temp { font-size: 2.2rem; font-weight: bold; }
-        .weather-desc { font-size: 0.9rem; text-transform: uppercase; opacity: 0.9; }
+        .weather-card { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .weather-temp { font-size: 2rem; font-weight: bold; }
+        .weather-desc { font-size: 0.8rem; text-transform: uppercase; opacity: 0.9; }
 
         /* Piyasa Kartları */
         .card { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #f1c40f; }
@@ -20,27 +20,38 @@
         .time { font-size: 0.65rem; color: #999; }
         .buy { color: #2ecc71; font-weight: bold; font-size: 1rem; }
         .sell { color: #e74c3c; font-weight: bold; font-size: 1rem; }
-        .group-title { font-size: 0.8rem; color: #7f8c8d; margin-top: 10px; font-weight: bold; text-align: center; }
+        .group-title { font-size: 0.8rem; color: #7f8c8d; margin: 10px 0; font-weight: bold; text-align: center; }
+
+        /* Haberler Bölümü */
+        .news-container { background: white; border-radius: 12px; padding: 10px; margin-top: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .news-item { display: block; padding: 10px; border-bottom: 1px solid #eee; text-decoration: none; color: #2c3e50; font-size: 0.85rem; font-weight: 500; }
+        .news-item:last-child { border-bottom: none; }
+        .news-item:active { background: #f9f9f9; }
 
         /* Namaz Kartı */
         .namaz-card { background: #1e1e1e; color: white; padding: 12px; border-radius: 10px; margin-top: 20px; }
         .namaz-grid { display: flex; justify-content: space-between; text-align: center; margin-top: 8px; }
-        .namaz-item { display: flex; flex-direction: column; font-size: 0.75rem; }
+        .namaz-item { display: flex; flex-direction: column; font-size: 0.7rem; }
         .namaz-vakit { font-weight: bold; color: #f1c40f; }
     </style>
 </head>
 <body>
 
     <div class="weather-card">
-        <div style="font-size: 0.7rem;">ANKARA HAVA DURUMU</div>
+        <div style="font-size: 0.6rem; opacity:0.8;">ANKARA</div>
         <div class="weather-temp" id="derece">--°C</div>
         <div class="weather-desc" id="durum">Yükleniyor...</div>
     </div>
 
-    <div class="header">CANLI PİYASA VERİLERİ</div>
+    <div class="header">CANLI PİYASA</div>
     
     <div class="container" id="data-container">
-        <div class="card"><span>Veriler yükleniyor...</span></div>
+        <div class="card"><span>Yükleniyor...</span></div>
+    </div>
+
+    <div class="group-title">SON DAKİKA HABERLER</div>
+    <div class="news-container" id="news-container">
+        <div style="padding:10px; text-align:center; font-size:0.8rem; color:#999;">Haberler yükleniyor...</div>
     </div>
 
     <div id="namaz-alani"></div>
@@ -62,7 +73,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // HAVA DURUMU VERİSİ
+        // HAVA DURUMU
         db.ref("hava/current_condition/0").on("value", (snapshot) => {
             const hData = snapshot.val();
             if (hData) {
@@ -92,14 +103,27 @@
             }
         });
 
-        // NAMAZ VAKİTLERİ VERİSİ
+        // HABERLERİ ÇEK
+        db.ref("haber/items").on("value", (snapshot) => {
+            const newsContainer = document.getElementById('news-container');
+            const items = snapshot.val();
+            if (items) {
+                newsContainer.innerHTML = '';
+                // Sadece ilk 10 haberi göster
+                items.slice(0, 10).forEach(item => {
+                    newsContainer.innerHTML += `<a href="${item.link}" target="_blank" class="news-item">🔹 ${item.title}</a>`;
+                });
+            }
+        });
+
+        // NAMAZ VAKİTLERİ
         db.ref("namaz/items/0").on("value", (snapshot) => {
             const nData = snapshot.val();
             const namazDiv = document.getElementById('namaz-alani');
             if (nData) {
                 namazDiv.innerHTML = `
                     <div class="namaz-card">
-                        <div style="text-align:center; font-size:0.7rem; border-bottom:1px solid #333; padding-bottom:5px;">ANKARA NAMAZ VAKİTLERİ</div>
+                        <div style="text-align:center; font-size:0.65rem; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:8px;">ANKARA NAMAZ VAKİTLERİ</div>
                         <div class="namaz-grid">
                             <div class="namaz-item"><span>İmsak</span><span class="namaz-vakit">${nData.fajr}</span></div>
                             <div class="namaz-item"><span>Güneş</span><span class="namaz-vakit">${nData.shurooq}</span></div>
