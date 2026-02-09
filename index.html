@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>PRO DASHBOARD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --orange: #ff8c00; --shadow: 0 4px 15px rgba(0,0,0,0.15); }
         body { font-family: 'Inter', sans-serif; background: #f4f7f6; margin: 0; padding: 15px; color: #333; overflow-x: hidden; }
@@ -14,20 +14,68 @@
         .box { flex: 1; background: white; border: 1px solid var(--orange); border-radius: 15px; box-shadow: var(--shadow); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; overflow: hidden; }
         
         /* HAVA DURUMU */
-        .weather-icon { font-size: 40px; margin-bottom: 5px; }
+        .weather-icon { font-size: 30px; margin-bottom: 5px; }
         .weather-temp { font-size: 22px; font-weight: bold; }
         .weather-desc { font-size: 11px; text-transform: uppercase; color: #777; }
 
         /* PİYASA DÖNGÜSÜ */
-        .market-slider { width: 100%; height: 100%; position: relative; }
-        .market-item { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; opacity: 0; }
-        .market-item.active { opacity: 1; }
-        .market-val { color: #2ecc71; font-weight: bold; font-size: 18px; margin-top: 5px; }
+		.ok-up { color: #2ecc71; font-weight: bold; margin-left: 5px; } /* Yeşil */
+        .ok-down { color: #e74c3c; font-weight: bold; margin-left: 5px; } /* Kırmızı */
+         .market-slider { width: 100%; height: 100%; position: relative; }
+        /*.market-item { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; opacity: 0; }
+        /* .market-item.active { opacity: 1; }
+         .market-val { color: #2ecc71; font-weight: bold; font-size: 18px; margin-top: 5px; }
+
+/* ANA KUTUDAKİ ÜÇLÜYÜ YAN YANA DİZER VE KAYDIRIR */
+#market-slider {
+    display: flex;
+    align-items: center;
+    overflow: hidden; /* Dışarı taşanı gizle */
+    width: 100%;
+    height: 100%;
+}
+
+.market-track {
+    display: flex;
+    white-space: nowrap;
+    width: max-content; /* İçerik kadar genişle */
+    animation: piyasaKAY 8s linear infinite; /* Hızı 12sn yaparak biraz serileştirdik */
+}
+
+.market-item {
+    display: flex;
+    align-items: center;
+    padding-right: 20px; /* Aralarındaki boşluk */
+    flex-shrink: 0; /* Sıkışmalarını engelle */
+}
+
+@keyframes piyasaKAY {
+    0% { transform: translateX(0); } /* En baştan başla */
+    100% { transform: translateX(-50%); } /* Yarıya kadar kay (ikiz kopya sayesinde kesilmez) */
+}
+
+/* YENİLEME BUTONU POZİSYONU */
+/*#market-slider { position: relative; } /* Üstüne eklenecek buton için temel */
+/* .piyasa-yenile-btn {
+   /* position: absolute;
+   /* right: 5px;
+   /* bottom: 5px;
+   /* font-size: 14px;
+   /* background: rgba(255,255,255,0.7);
+   /* border-radius: 50%;
+   /* width: 22px;
+   /* height: 22px;
+   /* display: flex;
+   /* align-items: center;
+   /* justify-content: center;
+   /* z-index: 20;
+   /* box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+/* }
 
         /* NAMAZ DİKDÖRTGEN */
         .namaz-strip { background: white; border: 1px solid var(--orange); border-radius: 12px; box-shadow: var(--shadow); padding: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; }
         .namaz-label { font-size: 13px; font-weight: bold; color: #555; }
-        .namaz-time { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: bold; color: #222; }
+        .namaz-time { font-family: 'Inter', sans-serif; font-size: 30px; font-weight: 700; color: #222; letter-spacing: 2px; /* Rakamları birbirine biraz yaklaştırıp tok durmasını sağladık */}
 
         /* TURUNCU ÇİZGİ */
         .separator { height: 3px; background: linear-gradient(to right, transparent, var(--orange), transparent); margin-bottom: 20px; box-shadow: 0 2px 5px rgba(255,140,0,0.3); }
@@ -44,7 +92,7 @@
         .modal-content { background: white; width: 90%; max-height: 70%; border-radius: 20px 20px 0 0; border: 1px solid var(--orange); padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out; overflow-y: auto; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .close-btn { background: var(--orange); color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 15px; }
-        .modal-list-item { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 14px; }
+        .modal-list-item { padding: 18px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; }
 
         /* HABER DETAY */
         .news-detail-img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
@@ -70,7 +118,7 @@
     </div>
 
     <div class="namaz-strip" onclick="openModal('modal-namaz')">
-        <span id="n-next-name" class="namaz-label">SIRADAKİ: --</span>
+        <span id="n-next-name" class="namaz-label">SONRAKİ: --</span>
         <span id="n-next-time" class="namaz-time">--:--</span>
     </div>
 
@@ -95,62 +143,147 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. HAVA DURUMU SİSTEMİ
+       // YENİ HAVA DURUMU SİSTEMİ (OPEN-METEO UYUMLU)
         db.ref("hava").on("value", s => {
             const d = s.val();
-            if(!d) return;
-            const cur = d.current_condition[0];
-            document.getElementById('w-temp').innerText = cur.temp_C + "°C";
-            document.getElementById('w-desc').innerText = cur.lang_tr[0].value;
-            document.getElementById('w-icon').innerText = getWeatherEmoji(cur.weatherCode);
+            if(!d || !d.current) return;
 
-            let listHtml = '';
-            d.weather.slice(0, 5).forEach(day => {
-                listHtml += `<div class="modal-list-item"><span>${day.date}</span><span>${getWeatherEmoji(day.hourly[4].weatherCode)} ${day.maxtempC}° / ${day.mintempC}°</span></div>`;
-            });
+            // Ana ekrandaki kutu
+            document.getElementById('w-temp').innerText = Math.round(d.current.temperature_2m) + "°C";
+            document.getElementById('w-desc').innerText = getWeatherDesc(d.current.weather_code);
+            document.getElementById('w-icon').innerText = getWeatherEmoji(d.current.weather_code);
+
+let listHtml = '';
+            const gunAdlari = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+            
+            for(let i=0; i<5; i++) {
+                let tarihObj = new Date(d.daily.time[i]);
+                let gunAdi = gunAdlari[tarihObj.getDay()];
+                let gun = String(tarihObj.getDate()).padStart(2, '0');
+                let ay = String(tarihObj.getMonth() + 1).padStart(2, '0');
+                let kisaTarih = `${gun}/${ay} ${gunAdi}`;
+
+                // BUGÜNÜ VURGULA (i=0 yani ilk eleman bugündür)
+                let stil = (i === 0) ? 'style="background: rgba(255,140,0,0.08); border-left: 5px solid var(--orange); font-weight: bold;"' : '';
+
+                listHtml += `
+                    <div class="modal-list-item" ${stil}>
+                        <span>${kisaTarih}</span>
+                        <span>${getWeatherEmoji(d.daily.weather_code[i])} ${getWeatherDesc(d.daily.weather_code[i])} ${Math.round(d.daily.temperature_2m_max[i])}° / ${Math.round(d.daily.temperature_2m_min[i])}°</span>
+                    </div>`;
+            }
             document.getElementById('list-weather').innerHTML = listHtml;
         });
 
+        // Hava Durumu Tanımları
+        function getWeatherDesc(code) {
+            const descriptions = {0:" ", 1:" ", 2:" ", 3:" ", 45:" ", 51:" ", 61:" ", 71:" ", 95:" "};
+            return descriptions[code] || "Açık";
+        }
+
         // 2. PİYASA DÖNGÜSÜ (3 Saniye)
-        let slideIdx = 0;
-        setInterval(() => {
-            const items = document.querySelectorAll('.market-item');
-            items[slideIdx].classList.remove('active');
-            slideIdx = (slideIdx + 1) % items.length;
-            items[slideIdx].classList.add('active');
-        }, 3000);
+  db.ref("piyasa").on("value", s => {
+    const data = s.val();
+    if (!data) return;
 
-        db.ref("piyasa").on("value", s => {
-            const data = s.val();
-            if(!data) return;
-            document.getElementById('slide-usd').innerText = data.currency.find(x=>x.Kod=="USD").Satis;
-            document.getElementById('slide-eur').innerText = data.currency.find(x=>x.Kod=="EUR").Satis;
-            document.getElementById('slide-ga').innerText = data.gold.find(x=>x.Kod=="GA").Satis;
+    // 1. ANA EKRANDAKİ KAYAN BANT
+    let icerik = '';
+    const anaVarliklar = [
+        { ad: "DOLAR", simge: "💲", deger: data.currency[0].Alis, fark: data.currency[0].Fark },
+        { ad: "EURO", simge: "💶", deger: data.currency[1].Alis, fark: data.currency[1].Fark },
+        { ad: "ALTIN", simge: "🔸", deger: data.gold[0].Alis, fark: data.gold[0].Fark }
+    ];
 
-            let listHtml = '';
-            data.gold.concat(data.currency).forEach(i => {
-                listHtml += `<div class="modal-list-item"><span>${i.Aciklama}</span><span style="color:green;font-weight:bold">${i.Satis}</span></div>`;
-            });
-            document.getElementById('list-market').innerHTML = listHtml;
-        });
+    anaVarliklar.forEach(v => {
+        let ok = parseFloat(v.fark) >= 0 ? '<span class="ok-up">▲</span>' : '<span class="ok-down">▼</span>';
+        icerik += `<div class="market-item">${v.simge} ${v.ad}: ${v.deger} ${ok}</div>`;
+    });
+ 
+    // Ana kutuyu ikiz kopya ve YENİLEME butonuyla doldur
+     document.getElementById('market-slider').innerHTML = `
+       <div class="market-track">${icerik}${icerik}</div>
+       <div class="piyasa-yenile-btn" onclick="location.reload();">🔄</div>`;
 
-        // 3. NAMAZ VAKTİ
-        db.ref("namaz/items/0").on("value", s => {
+    // 2. AÇILAN PENCERE (MODAL)
+    const tamListe = [
+        { n: "DOLAR", v: data.currency[0].Alis },
+        { n: "EURO", v: data.currency[1].Alis },
+        { n: "ONS ALTIN", v: data.gold[10].Alis },
+        { n: "GRAM ALTIN", v: data.gold[0].Alis },
+        { n: "ÇEYREK ALTIN", v: data.gold[1].Alis },
+        { n: "YARIM ALTIN", v: data.gold[2].Alis },
+        { n: "TAM ALTIN", v: data.gold[3].Alis },
+        { n: "GÜMÜŞ", v: data.gold[11].Alis },
+        { n: "18 AYAR ALTIN", v: data.gold[12].Alis },
+        { n: "22 AYAR BİLEZİK", v: data.gold[13].Alis }
+    ];
+ 
+ // SADECE SAAT KALSIN, BUTONU SİLDİK
+// TELEFONUN SAATİNİ DEĞİL, SADECE GITHUB'DAN GELEN GERÇEK VERİ SAATİNİ GÖSTERİR
+// Hem Altın hem Döviz kısmındaki saatleri kontrol eder, hangisini bulursa onu basar
+// Firebase'deki tam ismi olan "GuncellenmeZamani" olarak güncelledik
+let guncelSaat = (data.currency && data.currency[0].GuncellenmeZamani) || "VERİ BEKLENİYOR...";
+let mHtml = `
+    <div style="text-align:right; font-size:11px; color:#777; padding:8px; border-bottom:1px solid #eee;">
+        Son Güncelleme: ${guncelSaat} 
+    </div>`;
+    
+    tamListe.forEach(item => {
+        if(item.v) {
+            mHtml += `
+                <div class="modal-list-item">
+                    <span style="font-size: 14px;">🔹 ${item.n}</span>
+                    <span style="font-weight:bold;">${item.v}</span>
+                </div>`;
+        }
+    });
+    
+    document.getElementById('list-market').innerHTML = mHtml;
+});
+
+     db.ref("namaz/items/0").on("value", s => {
             const n = s.val();
             if(!n) return;
-            const vakitler = { "İMSAK": n.fajr, "ÖĞLE": n.dhuhr, "İKİNDİ": n.asr, "AKŞAM": n.maghrib, "YATSI": n.isha };
-            
-            // Sıradaki vakti bul (Basit mantık)
-            let now = new Date().getHours() + ":" + new Date().getMinutes();
-            let next = "İMSAK", time = n.fajr;
-            for(let v in vakitler) { if(vakitler[v] > now) { next = v; time = vakitler[v]; break; } }
-            
-            document.getElementById('n-next-name').innerText = "SIRADAKİ: " + next;
-            document.getElementById('n-next-time').innerText = time;
 
+            // 1. AM/PM'den 24 Saate Çevirme Fonksiyonu
+            const to24h = (timeStr) => {
+                let [time, modifier] = timeStr.split(' ');
+                let [hours, minutes] = time.split(':');
+                if (hours === '12') hours = '00';
+                if (modifier === 'pm') hours = parseInt(hours, 10) + 12;
+                return `${String(hours).padStart(2, '0')}:${minutes}`;
+            };
+
+            const vakitler = [
+                {ad: "İMSAK", saat: to24h(n.fajr)},
+                {ad: "ÖĞLE", saat: to24h(n.dhuhr)},
+                {ad: "İKİNDİ", saat: to24h(n.asr)},
+                {ad: "AKŞAM", saat: to24h(n.maghrib)},
+                {ad: "YATSI", saat: to24h(n.isha)}
+            ];
+
+            // 2. Aktif Vakti Bulma
+            let simdi = new Date();
+            let suan = String(simdi.getHours()).padStart(2, '0') + ":" + String(simdi.getMinutes()).padStart(2, '0');
+            
+            let aktifIndex = -1;
+            for(let i = 0; i < vakitler.length; i++) {
+                if(suan >= vakitler[i].saat) aktifIndex = i;
+            }
+            if(aktifIndex == -1) aktifIndex = 4; // Gece yarısından imsağa kadar yatsı sayılır
+
+            // 3. Listeyi Oluşturma
             let listHtml = '';
-            for(let v in vakitler) { listHtml += `<div class="modal-list-item"><span>${v}</span><span class="namaz-time" style="font-size:16px">${vakitler[v]}</span></div>`; }
+            vakitler.forEach((v, index) => {
+                let stil = (index === aktifIndex) ? 'style="background: rgba(255,140,0,0.08); border-left: 5px solid var(--orange); font-weight: bold;"' : '';
+                listHtml += `<div class="modal-list-item" ${stil}><span>${v.ad}</span><span class="namaz-time" style="font-size:18px">${v.saat}</span></div>`;
+            });
             document.getElementById('list-namaz').innerHTML = listHtml;
+            
+            // Ana ekrandaki şeridi güncelle (Sıradaki vakit)
+            let sonraki = vakitler[(aktifIndex + 1) % 5];
+            document.getElementById('n-next-name').innerText = "SIRADAKİ: " + sonraki.ad;
+            document.getElementById('n-next-time').innerText = sonraki.saat;
         });
 
         // 4. HABERLER (KARIŞIK)
@@ -198,8 +331,16 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         function getWeatherEmoji(code) {
-            const map = {"113":"☀️","116":"⛅","119":"☁️","122":"☁️","263":"🌦️","266":"🌦️","302":"🌧️","308":"🌧️","338":"❄️"};
-            return map[code] || "☀️";
+            // Kodları tek tek değil, gruplayarak en sağlam emojilere yönlendiriyoruz
+            if (code == 0) return "Güneşli ☀️"; 
+            if (code >= 1 && code <= 3) return "Az Bulutlu ⛅";
+            if (code >= 45 && code <= 48) return "Sisli ☁️";
+            if (code >= 51 && code <= 67) return "️Yağmurlu ☔"; // 67'yi burada kapsıyoruz
+            if (code >= 71 && code <= 86) return "Fırtınalı ❄️";
+            if (code >= 95) return "⛈️";
+            
+            // Eğer hala 67 veya başka bir kodda sorun çıkarsa diye emniyet kemeri:
+            return "☀️"; 
         }
     </script>
 </body>
